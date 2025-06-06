@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>KJSSE Lost and Found</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Roboto:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #3498db;
+            --dark-blue: #2c3e50;
+            --light-blue: #ecf0f1;
+            --accent-red: #e74c3c;
+            --accent-green: #2ecc71;
+            --text-dark: #333;
+            --text-light: #fefefe;
+            --grey-border: #bdc3c7;
+            --subheader-grey: #7f8c8d;
+            --pure-white: #ffffff;
+            --divider-grey: #f0f0f0;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--pure-white);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; margin: 0; padding: 0; }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 40px;
+            background-color: var(--dark-blue);
+            color: var(--text-light);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .header .menu-icon {
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+        .header .title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-light);
+            flex-grow: 1;
+            text-align: center;
+            padding: 5px;
+            margin-left: -50px;
+        }
+        .header .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* User Dropdown */
+        .user-dropdown {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+        .user-dropdown .user-avatar {
+            background-color: var(--accent-red);
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        .user-name {
+            font-size: 1rem;
+            text-transform: capitalize;
+        }
+        .profile-card {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            width: 260px;
+            background-color: #fff;
+            color: #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background-color: var(--accent-red);
+            color: #fff;
+            position: relative;
+        }
+        .profile-header .profile-avatar {
+            background-color: #fff;
+            color: var(--accent-red);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2px;
+        }
+        .profile-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .profile-email {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        .close-icon {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #fff;
+            font-weight: bold;
+        }
+        .profile-menu li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            transition: background-color 0.2s ease;
+        }
+        .profile-menu li i {
+            width: 20px;
+            text-align: center;
+            color: var(--accent-red);
+        }
+        .profile-menu li a {
+            flex-grow: 1;
+            font-size: 0.95rem;
+            color: #333;
+        }
+        .profile-menu li:hover {
+            background-color: #f5f5f5;
+        }
+        .profile-logout {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-top: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .profile-logout i {
+            color: var(--accent-red);
+            font-size: 1rem;
+        }
+        .profile-logout a {
+            flex-grow: 1;
+            font-size: 0.95rem;
+            color: #333;
+        }
+        .profile-logout:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: flex;
+            padding: 40px;
+            gap: 30px;
+            min-height: calc(100vh - 100px);
+            box-sizing: border-box;
+        }
+
+        /* Sidebar */
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 20px;
+            width: 250px;
+            flex-shrink: 0;
+        }
+        .sidebar {
+            width: 100%;
+            background-color: var(--pure-white);
+            border: 1px solid var(--grey-border);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            align-self: flex-start;
+        }
+        .sidebar .item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 10px;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 17px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .sidebar .item:hover {
+            background-color: var(--primary-blue);
+            color: var(--text-light);
+        }
+        .sidebar .item i {
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--primary-blue);
+            border: 1px solid var(--primary-blue);
+            border-radius: 5px;
+            transition: color 0.3s ease, border-color 0.3s ease;
+        }
+        .sidebar .item:hover i {
+            color: var(--text-light);
+            border-color: var(--text-light);
+        }
+
+        /* Items Found Counter */
+        .found-count {
+            width: 100%;
+            max-width: 150px;
+            background-color: var(--pure-white);
+            color: var(--dark-blue);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Roboto', sans-serif;
+            text-align: left;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            margin-top: 0;
+        }
+        .found-count .count-number-wrapper {
+            display: flex;
+            align-items: flex-end;
+            line-height: 1;
+            padding: 5px 0;
+        }
+        .found-count .count-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--dark-blue);
+        }
+        .found-count .plus-symbol {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--accent-red);
+            margin-left: 2px;
+        }
+        .found-count .count-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 5px;
+            color: var(--dark-blue);
+            padding: 5px 0;
+        }
+
+        /* Contacts */
+        .contacts {
+            width: 100%;
+            background-color: var(--dark-blue);
+            color: var(--text-light);
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Roboto', sans-serif;
+            text-align: left;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-top: 10px;
+            border-top: 1px solid var(--divider-grey);
+        }
+        .contacts strong {
+            color: var(--primary-blue);
+            display: block;
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 5px 0;
+        }
+        .contacts p {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 18px;
+            padding: 5px 0;
+        }
+
+        /* Main / Hero */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            background-color: var(--pure-white);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        .main .hero-image-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.1;
+            background-image: url('https://via.placeholder.com/1200x800/CCE3F6/FFFFFF?text=Lost+and+Found+Illustration');
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+        }
+        .main-content-group {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            flex-grow: 1;
+        }
+        .main .icon {
+            background-color: var(--primary-blue);
+            color: white;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .hero-text-content h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 36px;
+            margin: 0;
+            line-height: 1.3;
+            color: var(--dark-blue);
+            font-weight: 700;
+            padding: 5px;
+            animation: slideIn 1.5s ease-in-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-50px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        .hero-text-content h1 u {
+            text-decoration-color: var(--primary-blue);
+            text-decoration-thickness: 3px;
+        }
+        .hero-text-content p {
+            font-size: 24px;
+            color: var(--subheader-grey);
+            margin: 20px 0 40px;
+            animation: fadeIn 2s ease-in-out;
+            font-weight: 400;
+            line-height: 1.5;
+            padding: 5px;
+        }
+        .hero-subtext {
+            font-size: 18px;
+            color: var(--subheader-grey);
+            margin-bottom: 40px;
+        }
+        .actions {
+            display: flex;
+            gap: 25px;
+            margin-top: 20px;
+            animation: fadeInUp 2s ease-in-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .action-button {
+            display: inline-block;
+            padding: 20px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            color: #fff;
+        }
+        .report-btn {
+            background-color: var(--accent-red);
+            border: 2px solid var(--accent-red);
+        }
+        .report-btn:hover {
+            background-color: #c0392b;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
+        .found-items-btn {
+            background-color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+        .found-items-btn:hover {
+            background-color: #2980b9;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Hide “Admin” link if not admin */
+        .admin-link { display: none; }
+        {% if 'admin' in roles %}
+        .admin-link { display: inline-block; }
+        {% endif %}
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .header .title { font-size: 28px; }
+            .main-layout { flex-direction: column; padding: 20px; }
+            .left-column {
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+            }
+            .sidebar {
+                width: calc(50% - 10px);
+                max-width: 300px;
+                order: 1;
+            }
+            .found-count {
+                width: calc(50% - 10px);
+                max-width: 200px;
+                order: 2;
+                text-align: center;
+                align-items: center;
+                padding: 20px;
+            }
+            .found-count .count-number { font-size: 40px; }
+            .found-count .plus-symbol { font-size: 40px; }
+            .found-count .count-text { font-size: 16px; }
+            .contacts {
+                width: 100%;
+                order: 3;
+                margin-top: 20px;
+                border-top: 1px solid var(--divider-grey);
+                padding-top: 20px;
+                text-align: center;
+                padding: 20px;
+            }
+            .contacts p { justify-content: center; }
+            .main {
+                padding: 30px 15px;
+                order: 4;
+                min-height: auto;
+            }
+            .hero-text-content h1 { font-size: 32px; }
+            .hero-text-content p { font-size: 20px; }
+            .hero-subtext { font-size: 16px; }
+            .main .icon {
+                width: 90px;
+                height: 90px;
+                font-size: 45px;
+                margin-bottom: 20px;
+            }
+            .actions {
+                flex-direction: column;
+                gap: 15px;
+                width: 100%;
+                max-width: 300px;
+            }
+            .action-button {
+                width: 100%;
+                box-sizing: border-box;
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+        }
+        @media (max-width: 768px) {
+            .header { padding: 15px 20px; }
+            .header .title {
+                font-size: 28px;
+                text-align: center;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            .header .header-right {
+                width: 100%;
+                justify-content: space-around;
+                margin-top: 10px;
+            }
+            .header .menu-icon {
+                position: absolute;
+                left: 20px;
+                top: 20px;
+            }
+            .hero-text-content h1 { font-size: 32px; }
+            .hero-text-content p { font-size: 20px; }
+            .hero-subtext { font-size: 18px; }
+            .left-column {
+                flex-direction: column;
+                align-items: center;
+            }
+            .sidebar, .found-count, .contacts {
+                width: 90%;
+                max-width: 350px;
+            }
+            .found-count .count-number { font-size: 36px; }
+            .found-count .plus-symbol { font-size: 36px; }
+            .found-count .count-text { font-size: 16px; }
+            .contacts { text-align: center; }
+            .contacts p { justify-content: center; }
+        }
+        @media (max-width: 480px) {
+            .header .title { font-size: 24px; }
+            .header .user span { display: none; }
+            .hero-text-content h1 { font-size: 28px; }
+            .hero-text-content p { font-size: 18px; }
+            .hero-subtext { font-size: 16px; }
+            .main .icon {
+                width: 70px;
+                height: 70px;
+                font-size: 35px;
+            }
+            .found-count .count-number { font-size: 32px; }
+            .found-count .plus-symbol { font-size: 32px; }
+            .found-count .count-text { font-size: 16px; }
+            .contacts { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER + USER DROPDOWN -->
+    <header class="header">
+        <div class="menu-icon"><i class="fas fa-bars"></i></div>
+        <div class="title">KJSSE Lost and Found</div>
+        <div class="header-right">
+            <div class="user-dropdown" onclick="toggleProfileCard()">
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <span class="user-name">{{ email.split('@')[0] | capitalize }}</span>
+                <!-- ADMIN LINK (visible only if role="admin") -->
+                {% if 'admin' in roles %}
+                <a href="{{ url_for('list_reports') }}" class="admin-link" style="margin-left:20px;color:var(--accent-green);font-weight:600;">
+                    <i class="fas fa-shield-alt"></i> Admin
+                </a>
+                {% endif %}
+                <!-- PROFILE CARD POPUP -->
+                <div id="profile-card" class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="profile-info">
+                            <div class="profile-name">{{ email.split('@')[0] | capitalize }}</div>
+                            <div class="profile-email">{{ email }}</div>
+                        </div>
+                        <div class="close-icon" onclick="toggleProfileCard(event)">&times;</div>
+                    </div>
+                    <ul class="profile-menu">
+                        <li>
+                            <i class="fas fa-user"></i>
+                            <a href="{{ url_for('show_home') }}">Profile</a>
+                        </li>
+                        <li>
+                            <i class="fas fa-cog"></i>
+                            <a href="{{ url_for('settings') }}">Settings</a>
+                        </li>
+                        <li>
+                            <i class="fas fa-question-circle"></i>
+                            <a href="{{ url_for('help_page') }}">Help</a>
+                        </li>
+                    </ul>
+                    <div class="profile-logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <a href="{{ url_for('do_logout') }}">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN LAYOUT -->
+    <div class="main-layout">
+        <!-- LEFT COLUMN: Sidebar / Counter / Contacts -->
+        <div class="left-column">
+            <aside class="sidebar">
+                <a href="{{ url_for('category_items', cat='accessories') }}" class="item">
+                    <i class="fas fa-key"></i>
+                    <span>Accessories</span>
+                </a>
+                <a href="{{ url_for('category_items', cat='books') }}" class="item">
+                    <i class="fas fa-book"></i>
+                    <span>Books</span>
+                </a>
+                <a href="{{ url_for('category_items', cat='stationary') }}" class="item">
+                    <i class="fas fa-pencil-alt"></i>
+                    <span>Stationary</span>
+                </a>
+                <a href="{{ url_for('category_items', cat='others') }}" class="item">
+                    <i class="fas fa-th-large"></i>
+                    <span>Others</span>
+                </a>
+            </aside>
+
+            <div class="found-count" data-target="{{ total_reports }}">
+                <div class="count-number-wrapper">
+                    <span class="count-number">0</span>
+                    <span class="plus-symbol">+</span>
+                </div>
+                <span class="count-text">Items Found</span>
+            </div>
+
+            <div class="contacts">
+                <strong>Contacts:</strong>
+                <p><i class="fas fa-phone-alt"></i> Admin office: 1234567890</p>
+                <p><i class="fas fa-phone-alt"></i> Harshil Vora: 123425766</p>
+                <p><i class="fas fa-phone-alt"></i> Viraj Wairkar: 6337383836</p>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT: Hero -->
+        <div class="main">
+            <div class="hero-image-container"></div>
+            <div class="main-content-group">
+                <div class="icon"><i class="fas fa-search"></i></div>
+                <div class="hero-text-content">
+                    <h1><u>Lost something?<br>We’ll help you find it.</u></h1>
+                    <p class="hero-subtext">Because every item deserves a way back home.</p>
+                </div>
+                <div class="actions">
+                    <a href="{{ url_for('report_found') }}" class="action-button report-btn">Report found item</a>
+                    <a href="{{ url_for('items_found') }}" class="action-button found-items-btn">Found Items</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT FOR DROPDOWN & COUNTER -->
+    <script>
+        function toggleProfileCard(evt) {
+            if (evt) { evt.stopPropagation(); }
+            const card = document.getElementById('profile-card');
+            if (!card) return;
+            card.style.display = (card.style.display === 'flex') ? 'none' : 'flex';
+        }
+        window.addEventListener('click', function(e) {
+            const card = document.getElementById('profile-card');
+            const wrapper = document.querySelector('.user-dropdown');
+            if (!card || !wrapper) return;
+            if (!wrapper.contains(e.target)) {
+                card.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const target = parseInt(document.querySelector('.found-count').getAttribute('data-target'), 10) || 0;
+            const numberEl = document.querySelector('.found-count .count-number');
+            let current = 0;
+            const increment = Math.ceil(target / 50) || 1;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    numberEl.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    numberEl.textContent = current;
+                }
+            }, 20);
+        });
+    </script>
+</body>
+</html>
+
+

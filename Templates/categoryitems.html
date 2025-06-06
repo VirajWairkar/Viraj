@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Category: {{ category.title() }}</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary-color: #5177ad;
+      --accent-color: #ff6b6b;
+      --sidebar-bg: #ffffff;
+      --main-bg: #e5f7fe;
+      --card-bg: #ffffff;
+      --text-dark: #333;
+      --text-medium: #555;
+      --text-light: #777;
+      --border-color: #ccc;
+      --shadow-light: rgba(0,0,0,0.1);
+      --shadow-medium: rgba(0,0,0,0.15);
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--main-bg);
+      color: var(--text-dark);
+      line-height: 1.6;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 100%;
+      background: var(--sidebar-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px var(--shadow-light);
+    }
+    .sidebar h3 {
+      font-size: 1.3rem;
+      color: var(--primary-color);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .sidebar nav ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px; /* Space between items in horizontal layout */
+    }
+    .sidebar nav li {
+      flex: 1 1 auto; /* Allow items to grow and shrink */
+      min-width: 120px; /* Minimum width for items */
+    }
+    .sidebar .item {
+      display: flex;
+      align-items: center;
+      justify-content: center; /* Center content in item */
+      gap: 10px;
+      padding: 12px 15px;
+      text-decoration: none;
+      color: var(--text-dark);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      background-color: #f8f8f8; /* Light background for items */
+      border: 1px solid #eee;
+    }
+    .sidebar .item:hover {
+      background-color: #e0f2f7; /* Lighter blue on hover */
+      color: var(--primary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .sidebar .item i {
+      color: var(--primary-color);
+      font-size: 1.1rem;
+    }
+
+    /* Main Content */
+    .main {
+      flex: 1;
+    }
+    .search-bar {
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .search-bar input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 1rem;
+      box-shadow: inset 0 1px 3px var(--shadow-light);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .search-bar input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(81,119,173,0.2);
+    }
+    .current-date {
+      padding: 0 5px 16px 5px;
+      font-size: 1.1rem;
+      color: var(--text-dark);
+    }
+
+    /* Card Grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      padding: 0;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: 0 4px 12px var(--shadow-medium);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .card img {
+      width: 100%;
+      height: 200px; /* Slightly taller images */
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.3s ease;
+    }
+    .card-body {
+      padding: 18px;
+      flex-grow: 1; /* Allows body to take available space */
+    }
+    .card-body p {
+      margin: 6px 0;
+      font-size: 0.95rem;
+      color: var(--text-medium);
+    }
+    .card-body p strong {
+      font-size: 1.1rem;
+      color: var(--text-dark);
+    }
+    .card-footer {
+      background: #f9f9f9;
+      padding: 12px 18px;
+      text-align: center;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-top: 1px solid #eee;
+    }
+
+    /* Buttons */
+    .action-btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: white;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      white-space: nowrap; /* Prevent button text from wrapping */
+    }
+    .action-btn:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+      opacity: 0.7;
+      transform: none;
+    }
+    .claim-btn {
+      background-color: var(--accent-color); /* Red */
+    }
+    .claim-btn:not(:disabled):hover {
+      background-color: #e05c5c;
+      transform: translateY(-1px);
+    }
+    .unclaim-btn {
+      background-color: #ffa500; /* Orange for unclaim */
+    }
+    .unclaim-btn:not(:disabled):hover {
+      background-color: #e69500;
+      transform: translateY(-1px);
+    }
+    .receive-btn {
+      background-color: #28a745; /* Green */
+    }
+    .receive-btn:not(:disabled):hover {
+      background-color: #228b3c;
+      transform: translateY(-1px);
+    }
+
+    /* Status Indicators */
+    .status-indicator {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .status-unclaimed {
+      background-color: #ffdddd;
+      color: #cc0000;
+    }
+    .status-claimed {
+      background-color: #fffacd;
+      color: #b8860b;
+    }
+    .status-received {
+      background-color: #d4edda;
+      color: #1a5e2d;
+    }
+
+    /* Back Button */
+    .back-btn {
+      display: block;
+      text-align: center;
+      margin: 40px auto 20px auto;
+      background-color: var(--primary-color);
+      color: white;
+      text-decoration: none;
+      padding: 14px 28px;
+      border-radius: 8px;
+      width: fit-content;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .back-btn:hover {
+      background-color: #426799;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.7);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+    .modal-content {
+      background: #fff;
+      margin: 40px auto;
+      border-radius: 12px;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      animation: fadeIn 0.3s ease-out;
+    }
+    .modal-header {
+      padding: 15px 20px;
+      text-align: right;
+      border-bottom: 1px solid #eee;
+    }
+    .modal-header .close {
+      font-size: 30px;
+      font-weight: bold;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    .modal-header .close:hover {
+      color: var(--text-dark);
+    }
+    .modal-body {
+      display: flex;
+      flex-direction: column; /* Default to column for small screens */
+    }
+    .modal-image {
+      flex: 1;
+      background: #f0f0f0; /* Light background for image container */
+      display: flex; /* For centering image if it's smaller */
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+    .modal-image img {
+      width: 100%;
+      height: auto;
+      max-height: 400px; /* Limit image height */
+      object-fit: contain;
+      border-radius: 8px;
+    }
+    .modal-details {
+      flex: 1;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-details .caption {
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+      color: var(--text-dark);
+    }
+    .modal-details .meta {
+      margin-bottom: 20px;
+      color: var(--text-medium);
+      font-size: 0.95rem;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+    }
+    .modal-details .comments {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 200px; /* Limit comments section height */
+      margin-bottom: 15px;
+      padding-right: 10px; /* Space for scrollbar */
+    }
+    .modal-details .comments p {
+      margin: 8px 0;
+      font-size: 0.9rem;
+      color: var(--text-dark);
+    }
+    .modal-details .comments p strong {
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+    .modal-details form {
+      display: flex;
+      gap: 10px;
+      margin-top: auto; /* Push form to bottom */
+    }
+    .modal-details form input {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      font-size: 0.95rem;
+      transition: border-color 0.3s ease;
+    }
+    .modal-details form input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(81,119,173,0.1);
+    }
+    .modal-details form button {
+      padding: 10px 18px;
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    .modal-details form button:hover {
+      background: #426799;
+    }
+
+    /* Responsive */
+    @media (min-width: 768px) {
+      .container { flex-direction: row; }
+      .sidebar {
+        width: 250px;
+        margin-right: 25px;
+        margin-bottom: 0;
+        align-self: flex-start; /* Align sidebar to top */
+        position: sticky; /* Sticky sidebar */
+        top: 20px; /* Offset from top */
+      }
+      .sidebar nav ul {
+        flex-direction: column;
+        gap: 5px; /* Adjust gap for vertical menu */
+      }
+      .sidebar .item {
+        justify-content: flex-start; /* Align text to left in vertical menu */
+      }
+
+      .modal-body {
+        flex-direction: row;
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <h3>Item Categories</h3>
+      <nav>
+        <ul>
+          <li>
+            <a href="{{ url_for('category_items', cat='books') }}" class="item">
+              <i class="fas fa-book"></i> Books
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('category_items', cat='stationary') }}" class="item">
+              <i class="fas fa-pencil-alt"></i> Stationary
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('category_items', cat='accessories') }}" class="item">
+              <i class="fas fa-key"></i> Accessories
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('category_items', cat='others') }}" class="item">
+              <i class="fas fa-th-large"></i> Others
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <div class="main">
+      <div class="search-bar">
+        <input type="text" id="search" placeholder="Search by description or location..." oninput="filterCards()" />
+      </div>
+      <form method="get" action="{{ url_for('category_items', cat=category) }}" style="margin-bottom: 20px;">
+        <label for="filter_date">Filter by date:</label>
+        <input
+          type="date"
+          id="filter_date"
+          name="filter_date"
+          min="{{ min_date }}"
+          max="{{ max_date }}"
+          value="{{ filter_date or max_date }}"
+        >
+        <button type="submit">Go</button>
+      </form> 
+
+      <div class="current-date">
+        {% if filter_date %}
+          Date: <strong>{{ filter_date }}</strong>
+        {% else %}
+          Date: <strong>{{ today.strftime('%Y-%m-%d') }}</strong>
+        {% endif %}
+      </div>
+
+      
+      <div class="card-grid">
+        {% for item in items %}
+          <div class="card" onclick="openModal({{ item.id }})">
+            {% if item.filename %}
+              <img src="{{ url_for('static', filename='uploads/' ~ item.filename) }}" alt="{{ item.description }}" />
+            {% else %}
+              <img src="{{ url_for('static', filename='images/placeholder.png') }}" alt="No image available" />
+            {% endif %}
+            <div class="card-body">
+              <p><strong>{{ item.description }}</strong></p>
+              <p>Location: {{ item.location }}</p>
+              <p>Date: {{ item.date_found }}</p>
+              <p>Found by: {{ item.email }}</p>
+            </div>
+            <div class="card-footer">
+              {% if not item.claimed %}
+                <button class="action-btn claim-btn" onclick="event.stopPropagation(); window.location='{{ url_for('claim_report', report_id=item.id) }}';">Claim</button>
+                <button class="action-btn receive-btn" disabled>Receive</button>
+                <span class="status-indicator status-unclaimed">Unclaimed</span>
+              {% elif item.claimed and not item.received %}
+                <button class="action-btn claim-btn" disabled>Claimed</button>
+                <button class="action-btn receive-btn" onclick="event.stopPropagation(); window.location='{{ url_for('receive_report', report_id=item.id) }}';">Receive</button>
+                {% if 'admin' in roles %}
+                  <button class="action-btn unclaim-btn" onclick="event.stopPropagation(); window.location='{{ url_for('claim_report', report_id=item.id) }}';">Unclaim</button>
+                {% endif %}
+                <span class="status-indicator status-claimed">Claimed</span>
+              {% elif item.received %}
+                <button class="action-btn claim-btn" disabled>Claimed</button>
+                <button class="action-btn receive-btn" disabled>Received</button>
+                <span class="status-indicator status-received">Received</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+
+      <a href="{{ url_for('show_home') }}" class="back-btn">&larr; Back to Dashboard</a>
+    </div>
+  </div>
+
+  {% for item in items %}
+    <div id="modal-{{ item.id }}" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="close" onclick="closeModal({{ item.id }})">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div class="modal-image">
+            {% if item.filename %}
+              <img src="{{ url_for('static', filename='uploads/' ~ item.filename) }}" alt="{{ item.description }}" />
+            {% else %}
+              <img src="{{ url_for('static', filename='images/placeholder.png') }}" alt="No image available" />
+            {% endif %}
+          </div>
+          <div class="modal-details">
+            <p class="caption"><strong>{{ item.email }}</strong> {{ item.description }}</p>
+            <p class="meta">Location: {{ item.location }} &bull; Date: {{ item.date_found }}</p>
+            <div class="comments">
+              {% for com in item.comments %}
+                <p><strong>{{ com.author }}</strong> {{ com.text }}</p>
+              {% endfor %}
+            </div>
+            <form action="{{ url_for('add_comment', report_id=item.id) }}" method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="text" name="comment_text" placeholder="Add a comment..." required />
+              <button type="submit">Post</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+  <script>
+    function openModal(id) {
+      document.getElementById('modal-' + id).style.display = 'block';
+    }
+    function closeModal(id) {
+      document.getElementById('modal-' + id).style.display = 'none';
+    }
+    window.onclick = function(event) {
+      if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+      }
+    }
+    function filterCards() {
+      const q = document.getElementById('search').value.toLowerCase();
+      document.querySelectorAll('.card').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>
+
+
