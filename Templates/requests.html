@@ -1,24 +1,38 @@
-<h1>Pending Claim Requests</h1>
-{% set grouped = {} %}
-{% for r in requests %}
-  {% do grouped.setdefault(r.report_id, []).append(r) %}
-{% endfor %}
-
-{% for item_id, reqs in grouped.items() %}
-  <h2>Item #{{ item_id }}</h2>
-  <ul>
-    {% for r in reqs %}
-      <li>
-        {{ r.user_email }}
-        <form style="display:inline" method="post"
-              action="{{ url_for('decide_claim', req_id=r.id, decision='accept') }}">
-          <button>✔️ Accept</button>
-        </form>
-        <form style="display:inline" method="post"
-              action="{{ url_for('decide_claim', req_id=r.id, decision='decline') }}">
-          <button>❌ Decline</button>
-        </form>
-      </li>
-    {% endfor %}
-  </ul>
-{% endfor %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Pending Claim Requests</title>
+  <style>
+    body { font-family:sans-serif; padding:20px; }
+    h2 { margin-top:24px; }
+    ul { list-style:none; padding:0; }
+    li { margin:8px 0; }
+    form { display:inline; margin-left:8px; }
+    button { padding:4px 8px; margin-left:4px; }
+  </style>
+</head>
+<body>
+  <h1>Pending Claim Requests</h1>
+  {% for item_id, reqs in grouped_requests.items() %}
+    <h2>Item #{{ item_id }}</h2>
+    <ul>
+      {% for r in reqs %}
+        <li>
+          {{ r.user_email }}
+          <form method="post" action="{{ url_for('decide_claim', req_id=r.id, decision='accept') }}">
+            {{ csrf_token() }}
+            <button>✔️ Accept</button>
+          </form>
+          <form method="post" action="{{ url_for('decide_claim', req_id=r.id, decision='decline') }}">
+            {{ csrf_token() }}
+            <button>❌ Decline</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endfor %}
+  <p><a href="{{ url_for('show_home') }}">&larr; Back to Dashboard</a></p>
+</body>
+</html>

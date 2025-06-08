@@ -57,16 +57,16 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 10px; /* Space between items in horizontal layout */
+      gap: 10px;
     }
     .sidebar nav li {
-      flex: 1 1 auto; /* Allow items to grow and shrink */
-      min-width: 120px; /* Minimum width for items */
+      flex: 1 1 auto;
+      min-width: 120px;
     }
     .sidebar .item {
       display: flex;
       align-items: center;
-      justify-content: center; /* Center content in item */
+      justify-content: center;
       gap: 10px;
       padding: 12px 15px;
       text-decoration: none;
@@ -74,11 +74,11 @@
       border-radius: 8px;
       font-size: 1rem;
       transition: background-color 0.3s ease, transform 0.2s ease;
-      background-color: #f8f8f8; /* Light background for items */
+      background-color: #f8f8f8;
       border: 1px solid #eee;
     }
     .sidebar .item:hover {
-      background-color: #e0f2f7; /* Lighter blue on hover */
+      background-color: #e0f2f7;
       color: var(--primary-color);
       transform: translateY(-2px);
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
@@ -87,8 +87,7 @@
       color: var(--primary-color);
       font-size: 1.1rem;
     }
-
-    /* Main Content */
+    /* Main */
     .main {
       flex: 1;
     }
@@ -117,8 +116,6 @@
       font-size: 1.1rem;
       color: var(--text-dark);
     }
-
-    /* Card Grid */
     .card-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -141,14 +138,14 @@
     }
     .card img {
       width: 100%;
-      height: 200px; /* Slightly taller images */
+      height: 200px;
       object-fit: cover;
       display: block;
       transition: opacity 0.3s ease;
     }
     .card-body {
       padding: 18px;
-      flex-grow: 1; /* Allows body to take available space */
+      flex-grow: 1;
     }
     .card-body p {
       margin: 6px 0;
@@ -164,14 +161,11 @@
       padding: 12px 18px;
       text-align: center;
       display: flex;
-      justify-content: space-around;
+      justify-content: center;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
       border-top: 1px solid #eee;
     }
-
-    /* Buttons */
     .action-btn {
       padding: 8px 15px;
       border: none;
@@ -181,7 +175,7 @@
       font-weight: 600;
       color: white;
       transition: background-color 0.3s ease, transform 0.2s ease;
-      white-space: nowrap; /* Prevent button text from wrapping */
+      white-space: nowrap;
     }
     .action-btn:disabled {
       background-color: #cccccc;
@@ -190,251 +184,58 @@
       transform: none;
     }
     .claim-btn {
-      background-color: var(--accent-color); /* Red */
+      background-color: var(--accent-color);
     }
-    .claim-btn:not(:disabled):hover {
+    .claim-btn:hover {
       background-color: #e05c5c;
-      transform: translateY(-1px);
     }
-    .unclaim-btn {
-      background-color: #ffa500; /* Orange for unclaim */
-    }
-    .unclaim-btn:not(:disabled):hover {
-      background-color: #e69500;
-      transform: translateY(-1px);
-    }
-    .receive-btn {
-      background-color: #28a745; /* Green */
-    }
-    .receive-btn:not(:disabled):hover {
-      background-color: #228b3c;
-      transform: translateY(-1px);
-    }
-
-    /* Status Indicators */
     .status-indicator {
+      font-size: 0.9rem;
+      font-weight: 600;
       padding: 4px 8px;
       border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      white-space: nowrap;
-    }
-    .status-unclaimed {
-      background-color: #ffdddd;
-      color: #cc0000;
     }
     .status-claimed {
       background-color: #fffacd;
       color: #b8860b;
     }
-    .status-received {
-      background-color: #d4edda;
-      color: #1a5e2d;
-    }
-
-    /* Back Button */
-    .back-btn {
+    a.back-btn {
       display: block;
-      text-align: center;
-      margin: 40px auto 20px auto;
+      margin: 30px auto;
+      padding: 12px 20px;
       background-color: var(--primary-color);
-      color: white;
-      text-decoration: none;
-      padding: 14px 28px;
-      border-radius: 8px;
-      width: fit-content;
-      font-weight: 600;
-      font-size: 1rem;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    .back-btn:hover {
-      background-color: #426799;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 100;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.7);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-    }
-    .modal-content {
-      background: #fff;
-      margin: 40px auto;
-      border-radius: 12px;
-      max-width: 900px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-      animation: fadeIn 0.3s ease-out;
-    }
-    .modal-header {
-      padding: 15px 20px;
-      text-align: right;
-      border-bottom: 1px solid #eee;
-    }
-    .modal-header .close {
-      font-size: 30px;
-      font-weight: bold;
-      color: var(--text-light);
-      cursor: pointer;
-      transition: color 0.2s ease;
-    }
-    .modal-header .close:hover {
-      color: var(--text-dark);
-    }
-    .modal-body {
-      display: flex;
-      flex-direction: column; /* Default to column for small screens */
-    }
-    .modal-image {
-      flex: 1;
-      background: #f0f0f0; /* Light background for image container */
-      display: flex; /* For centering image if it's smaller */
-      align-items: center;
-      justify-content: center;
-      padding: 10px;
-    }
-    .modal-image img {
-      width: 100%;
-      height: auto;
-      max-height: 400px; /* Limit image height */
-      object-fit: contain;
-      border-radius: 8px;
-    }
-    .modal-details {
-      flex: 1;
-      padding: 25px;
-      display: flex;
-      flex-direction: column;
-    }
-    .modal-details .caption {
-      margin-bottom: 15px;
-      font-size: 1.1rem;
-      color: var(--text-dark);
-    }
-    .modal-details .meta {
-      margin-bottom: 20px;
-      color: var(--text-medium);
-      font-size: 0.95rem;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 15px;
-    }
-    .modal-details .comments {
-      flex: 1;
-      overflow-y: auto;
-      max-height: 200px; /* Limit comments section height */
-      margin-bottom: 15px;
-      padding-right: 10px; /* Space for scrollbar */
-    }
-    .modal-details .comments p {
-      margin: 8px 0;
-      font-size: 0.9rem;
-      color: var(--text-dark);
-    }
-    .modal-details .comments p strong {
-      color: var(--primary-color);
-      font-weight: 600;
-    }
-    .modal-details form {
-      display: flex;
-      gap: 10px;
-      margin-top: auto; /* Push form to bottom */
-    }
-    .modal-details form input {
-      flex: 1;
-      padding: 10px 12px;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      font-size: 0.95rem;
-      transition: border-color 0.3s ease;
-    }
-    .modal-details form input:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 2px rgba(81,119,173,0.1);
-    }
-    .modal-details form button {
-      padding: 10px 18px;
-      background: var(--primary-color);
       color: #fff;
-      border: none;
+      text-decoration: none;
+      width: fit-content;
       border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.95rem;
+      text-align: center;
       font-weight: 600;
-      transition: background-color 0.3s ease;
     }
-    .modal-details form button:hover {
-      background: #426799;
+    a.back-btn:hover {
+      background-color: #426799;
     }
-
-    /* Responsive */
     @media (min-width: 768px) {
       .container { flex-direction: row; }
       .sidebar {
         width: 250px;
-        margin-right: 25px;
-        margin-bottom: 0;
-        align-self: flex-start; /* Align sidebar to top */
-        position: sticky; /* Sticky sidebar */
-        top: 20px; /* Offset from top */
+        margin-right: 20px;
+        position: sticky;
+        top: 20px;
       }
-      .sidebar nav ul {
-        flex-direction: column;
-        gap: 5px; /* Adjust gap for vertical menu */
-      }
-      .sidebar .item {
-        justify-content: flex-start; /* Align text to left in vertical menu */
-      }
-
-      .modal-body {
-        flex-direction: row;
-      }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
     }
   </style>
-</hea<body>
+</head>
+<body>
   <div class="container">
     <aside class="sidebar">
       <h3>Item Categories</h3>
       <nav>
         <ul>
-          <li>
-            <a href="{{ url_for('category_items', cat='books') }}" class="item">
-              <i class="fas fa-book"></i> Books
-            </a>
-          </li>
-          <li>
-            <a href="{{ url_for('category_items', cat='stationary') }}" class="item">
-              <i class="fas fa-pencil-alt"></i> Stationary
-            </a>
-          </li>
-          <li>
-            <a href="{{ url_for('category_items', cat='accessories') }}" class="item">
-              <i class="fas fa-key"></i> Accessories
-            </a>
-          </li>
-          <li>
-            <a href="{{ url_for('category_items', cat='others') }}" class="item">
-              <i class="fas fa-th-large"></i> Others
-            </a>
-          </li>
+          <li><a href="{{ url_for('category_items', cat='books') }}" class="item"><i class="fas fa-book"></i> Books</a></li>
+          <li><a href="{{ url_for('category_items', cat='stationary') }}" class="item"><i class="fas fa-pencil-alt"></i> Stationary</a></li>
+          <li><a href="{{ url_for('category_items', cat='accessories') }}" class="item"><i class="fas fa-key"></i> Accessories</a></li>
+          <li><a href="{{ url_for('category_items', cat='others') }}" class="item"><i class="fas fa-th-large"></i> Others</a></li>
         </ul>
       </nav>
     </aside>
@@ -443,7 +244,7 @@
       <div class="search-bar">
         <input type="text" id="search" placeholder="Search by description or location..." oninput="filterCards()" />
       </div>
-      <form method="get" action="{{ url_for('category_items', cat=category) }}" style="margin-bottom: 20px;">
+      <form method="get" action="{{ url_for('category_items', cat=category) }}" style="margin-bottom:16px;">
         <label for="filter_date">Filter by date:</label>
         <input
           type="date"
@@ -452,27 +253,18 @@
           min="{{ min_date }}"
           max="{{ max_date }}"
           value="{{ filter_date or max_date }}"
-        >
+        />
         <button type="submit">Go</button>
-      </form> 
+      </form>
 
       <div class="current-date">
-        {% if filter_date %}
-          Date: <strong>{{ filter_date }}</strong>
-        {% else %}
-          Date: <strong>{{ today.strftime('%Y-%m-%d') }}</strong>
-        {% endif %}
+        Date: <strong>{{ filter_date or today.strftime('%Y-%m-%d') }}</strong>
       </div>
 
-      
       <div class="card-grid">
         {% for item in items %}
-          <div class="card" onclick="openModal({{ item.id }})">
-            {% if item.filename %}
-              <img src="{{ url_for('static', filename='uploads/' ~ item.filename) }}" alt="{{ item.description }}" />
-            {% else %}
-              <img src="{{ url_for('static', filename='images/placeholder.png') }}" alt="No image available" />
-            {% endif %}
+          <div class="card">
+            <img src="{{ url_for('static','uploads/'+item.filename) }}" alt="{{ item.description }}">
             <div class="card-body">
               <p><strong>{{ item.description }}</strong></p>
               <p>Location: {{ item.location }}</p>
@@ -480,119 +272,40 @@
               <p>Found by: {{ item.email }}</p>
             </div>
             <div class="card-footer">
-  {# 1st case: no existing claim‐request from *this* user #}
-  {% if not item.claim_requests|selectattr('user_email','equalto',email)|list %}
-    <button class="action-btn claim-btn"
-        onclick="event.stopPropagation();
-                 if (confirm('Are you sure you want to claim this?')) {
-                   fetch('{{ url_for('request_claim', report_id=item.id) }}', { method: 'POST' })
-                      headers: {
-                      // grab the cookie from the jar and show it to the guard
-                      'X-CSRFToken': document
-                        .querySelector('meta[name="csrf-token"]')
-                        .getAttribute('content')
-                    }
-                     .then(res => res.json())  // read the JSON reply
-                     .then(data => {           // now we have { message: "…" }
-                       alert(data.message);    // pop up the flash!
-                       location.reload();      // then refresh the page
-                     });
-                 }">
-      Claim
-    </button>
-
-    <button class="action-btn receive-btn" disabled>Receive</button>
-    <span class="status-indicator status-unclaimed">Unclaimed</span>
-
-  {# 2nd case: this user has already requested #}
-  {% elif item.claim_requests|selectattr('user_email','equalto',email)|list %}
-    <span class="status-indicator status-claimed">Requested</span>
-
-  {# 3rd case: item was approved for this user but not yet received #}
-  {% elif item.claimed and not item.received %}
-    <button class="action-btn claim-btn" disabled>Claimed</button>
-    <button class="action-btn receive-btn"
-            onclick="event.stopPropagation(); window.location='{{ url_for("receive_report", report_id=item.id) }}'">
-      Receive
-    </button>
-    <span class="status-indicator status-claimed">Claimed</span>
-
-  {# 4th case: item fully received #}
-  {% elif item.received %}
-    <button class="action-btn claim-btn" disabled>Claimed</button>
-    <button class="action-btn receive-btn" disabled>Received</button>
-    <span class="status-indicator status-received">Received</span>
-
-  {% endif %}
-</div>
-
+              {% if item.id in user_claims %}
+                <span class="status-indicator status-claimed">Pending…</span>
+              {% else %}
+                <button class="action-btn claim-btn"
+                        onclick="requestClaim({{ item.id }}); return false;">
+                  Claim
+                </button>
+              {% endif %}
+            </div>
           </div>
         {% endfor %}
       </div>
-
 
       <a href="{{ url_for('show_home') }}" class="back-btn">&larr; Back to Dashboard</a>
     </div>
   </div>
 
-  {% for item in items %}
-    <div id="modal-{{ item.id }}" class="modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <span class="close" onclick="closeModal({{ item.id }})">&times;</span>
-        </div>
-        <div class="modal-body">
-          <div class="modal-image">
-            {% if item.filename %}
-              <img src="{{ url_for('static', filename='uploads/' ~ item.filename) }}" alt="{{ item.description }}" />
-            {% else %}
-              <img src="{{ url_for('static', filename='images/placeholder.png') }}" alt="No image available" />
-            {% endif %}
-          </div>
-          <div class="modal-details">
-            <p class="caption"><strong>{{ item.email }}</strong> {{ item.description }}</p>
-            <p class="meta">Location: {{ item.location }} &bull; Date: {{ item.date_found }}</p>
-            <div class="comments">
-              {% for com in item.complaints %}
-                <p>
-                  <strong>{{ com.reporter_email }}</strong>
-                  {{ com.message }}
-                </p>
-              {% endfor %}
-
-            </div>
-            <form action="{{ url_for('add_comment', report_id=item.id) }}" method="POST">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <input type="text" name="comment_text" placeholder="Add a comment..." required />
-              <button type="submit">Post</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-  {% endfor %}
-
   <script>
-    function openModal(id) {
-      document.getElementById('modal-' + id).style.display = 'block';
+    function requestClaim(id) {
+      fetch(`/request-claim/${id}`, {
+        method:'POST',
+        headers:{ 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content }
+      })
+      .then(r=>r.json()).then(d=>{
+        alert(d.message);
+        location.reload();
+      });
     }
-    function closeModal(id) {
-      document.getElementById('modal-' + id).style.display = 'none';
-    }
-    window.onclick = function(event) {
-      if (event.target.classList.contains('modal')) {
-        event.target.style.display = 'none';
-      }
-    }
-    function filterCards() {
-      const q = document.getElementById('search').value.toLowerCase();
-      document.querySelectorAll('.card').forEach(card => {
-        const text = card.textContent.toLowerCase();
-        card.style.display = text.includes(q) ? '' : 'none';
+    function filterCards(){
+      const q=document.getElementById('search').value.toLowerCase();
+      document.querySelectorAll('.card').forEach(c=>{
+        c.style.display=c.textContent.toLowerCase().includes(q)?'':'none';
       });
     }
   </script>
 </body>
 </html>
-
-
