@@ -1,0 +1,24 @@
+<h1>Pending Claim Requests</h1>
+{% set grouped = {} %}
+{% for r in requests %}
+  {% do grouped.setdefault(r.report_id, []).append(r) %}
+{% endfor %}
+
+{% for item_id, reqs in grouped.items() %}
+  <h2>Item #{{ item_id }}</h2>
+  <ul>
+    {% for r in reqs %}
+      <li>
+        {{ r.user_email }}
+        <form style="display:inline" method="post"
+              action="{{ url_for('decide_claim', req_id=r.id, decision='accept') }}">
+          <button>✔️ Accept</button>
+        </form>
+        <form style="display:inline" method="post"
+              action="{{ url_for('decide_claim', req_id=r.id, decision='decline') }}">
+          <button>❌ Decline</button>
+        </form>
+      </li>
+    {% endfor %}
+  </ul>
+{% endfor %}

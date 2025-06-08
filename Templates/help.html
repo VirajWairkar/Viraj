@@ -215,6 +215,35 @@
             </div>
         </section>
 
+        <section>
+  <h2>Your Claimed Items</h2>
+
+  {% if claimed_items %}
+  <ul>
+    {% for rpt in claimed_items %}
+      <li>
+        #{{ rpt.id }} – {{ rpt.description }}
+        <a href="{{ url_for('new_complaint', report_id=rpt.id) }}"
+           style="margin-left:8px;
+                  padding:4px 8px;
+                  background:#FF8C42;
+                  color:#fff;
+                  border-radius:4px;
+                  text-decoration:none;">
+          Complain
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>You haven’t claimed anything yet.</p>
+{% endif %}
+
+
+ 
+</section>
+
+
     </div>
 
     <footer>

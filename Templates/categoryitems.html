@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Category: {{ category.title() }}</title>
@@ -408,8 +409,7 @@
       to { opacity: 1; transform: scale(1); }
     }
   </style>
-</head>
-<body>
+</hea<body>
   <div class="container">
     <aside class="sidebar">
       <h3>Item Categories</h3>
@@ -480,23 +480,52 @@
               <p>Found by: {{ item.email }}</p>
             </div>
             <div class="card-footer">
-              {% if not item.claimed %}
-                <button class="action-btn claim-btn" onclick="event.stopPropagation(); window.location='{{ url_for('claim_report', report_id=item.id) }}';">Claim</button>
-                <button class="action-btn receive-btn" disabled>Receive</button>
-                <span class="status-indicator status-unclaimed">Unclaimed</span>
-              {% elif item.claimed and not item.received %}
-                <button class="action-btn claim-btn" disabled>Claimed</button>
-                <button class="action-btn receive-btn" onclick="event.stopPropagation(); window.location='{{ url_for('receive_report', report_id=item.id) }}';">Receive</button>
-                {% if 'admin' in roles %}
-                  <button class="action-btn unclaim-btn" onclick="event.stopPropagation(); window.location='{{ url_for('claim_report', report_id=item.id) }}';">Unclaim</button>
-                {% endif %}
-                <span class="status-indicator status-claimed">Claimed</span>
-              {% elif item.received %}
-                <button class="action-btn claim-btn" disabled>Claimed</button>
-                <button class="action-btn receive-btn" disabled>Received</button>
-                <span class="status-indicator status-received">Received</span>
-              {% endif %}
-            </div>
+  {# 1st case: no existing claim‐request from *this* user #}
+  {% if not item.claim_requests|selectattr('user_email','equalto',email)|list %}
+    <button class="action-btn claim-btn"
+        onclick="event.stopPropagation();
+                 if (confirm('Are you sure you want to claim this?')) {
+                   fetch('{{ url_for('request_claim', report_id=item.id) }}', { method: 'POST' })
+                      headers: {
+                      // grab the cookie from the jar and show it to the guard
+                      'X-CSRFToken': document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute('content')
+                    }
+                     .then(res => res.json())  // read the JSON reply
+                     .then(data => {           // now we have { message: "…" }
+                       alert(data.message);    // pop up the flash!
+                       location.reload();      // then refresh the page
+                     });
+                 }">
+      Claim
+    </button>
+
+    <button class="action-btn receive-btn" disabled>Receive</button>
+    <span class="status-indicator status-unclaimed">Unclaimed</span>
+
+  {# 2nd case: this user has already requested #}
+  {% elif item.claim_requests|selectattr('user_email','equalto',email)|list %}
+    <span class="status-indicator status-claimed">Requested</span>
+
+  {# 3rd case: item was approved for this user but not yet received #}
+  {% elif item.claimed and not item.received %}
+    <button class="action-btn claim-btn" disabled>Claimed</button>
+    <button class="action-btn receive-btn"
+            onclick="event.stopPropagation(); window.location='{{ url_for("receive_report", report_id=item.id) }}'">
+      Receive
+    </button>
+    <span class="status-indicator status-claimed">Claimed</span>
+
+  {# 4th case: item fully received #}
+  {% elif item.received %}
+    <button class="action-btn claim-btn" disabled>Claimed</button>
+    <button class="action-btn receive-btn" disabled>Received</button>
+    <span class="status-indicator status-received">Received</span>
+
+  {% endif %}
+</div>
+
           </div>
         {% endfor %}
       </div>
@@ -524,9 +553,13 @@
             <p class="caption"><strong>{{ item.email }}</strong> {{ item.description }}</p>
             <p class="meta">Location: {{ item.location }} &bull; Date: {{ item.date_found }}</p>
             <div class="comments">
-              {% for com in item.comments %}
-                <p><strong>{{ com.author }}</strong> {{ com.text }}</p>
+              {% for com in item.complaints %}
+                <p>
+                  <strong>{{ com.reporter_email }}</strong>
+                  {{ com.message }}
+                </p>
               {% endfor %}
+
             </div>
             <form action="{{ url_for('add_comment', report_id=item.id) }}" method="POST">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

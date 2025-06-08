@@ -17,6 +17,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import StringField, SelectField, DateField, FileField, TelField
 from wtforms.validators import DataRequired, Length, Regexp
+from wtforms import IntegerField, TextAreaField
+from wtforms.validators import DataRequired
+from flask import jsonify
+
+
+class ComplaintForm(FlaskForm):
+    report_id      = IntegerField('Item Report ID', validators=[DataRequired()])
+    details        = TextAreaField('Complaint Details', validators=[DataRequired()])
+
 
 import bleach  # Make sure bleach is installed in your environment
 
@@ -78,9 +87,30 @@ class Report(db.Model):
     date_found  = db.Column(db.String, nullable=False)  # stored as 'YYYY-MM-DD'
     category    = db.Column(db.String, nullable=False)
     contact     = db.Column(db.String, nullable=False)
-    timestamp   = db.Column(db.DateTime, default=date.today)
-    claimed     = db.Column(db.Boolean, default=False)
+    timestamp = db.Column(db.DateTime, server_default=db.func.now())
 
+    claimed     = db.Column(db.Boolean, default=False)
+    claimed_by = db.Column(db.String, nullable=True)
+    received = db.Column(db.Boolean, default=False)
+
+
+
+class Complaint(db.Model):
+    id             = db.Column(db.Integer, primary_key=True)
+    reporter_email = db.Column(db.String, nullable=False)
+    report_id      = db.Column(db.Integer, db.ForeignKey('report.id'), nullable=False)
+    message        = db.Column(db.String, nullable=True)
+    timestamp      = db.Column(db.DateTime, server_default=db.func.now())
+    report         = db.relationship('Report', backref=db.backref('complaints', lazy=True))
+
+
+class ClaimRequest(db.Model):
+    id          = db.Column(db.Integer, primary_key=True)
+    user_email  = db.Column(db.String, nullable=False)
+    report_id   = db.Column(db.Integer, db.ForeignKey('report.id'), nullable=False)
+    status      = db.Column(db.String, nullable=False, default='pending')
+    timestamp   = db.Column(db.DateTime, server_default=db.func.now())
+    report      = db.relationship('Report', backref=db.backref('claim_requests', lazy=True))
 
 # ───── Forms ─────
 class ReportForm(FlaskForm):
@@ -320,6 +350,8 @@ def claim_report(report_id):
     rpt = Report.query.get_or_404(report_id)
     if not rpt.claimed:
         rpt.claimed = True
+        rpt.claimed_by = session['email']
+
         db.session.commit()
         flash('Report claimed successfully.')
     return redirect(request.referrer or url_for('show_home'))
@@ -340,6 +372,8 @@ def claim_by_id(report_id):
     rpt = Report.query.get_or_404(report_id)
     if not rpt.claimed:
         rpt.claimed = True
+        rpt.claimed_by = session['email']
+
         db.session.commit()
         flash('You have claimed the item.')
     return redirect(request.referrer or url_for('show_home'))
@@ -349,7 +383,16 @@ def claim_by_id(report_id):
 def help_page():
     if 'email' not in session:
         return redirect(url_for('do_login'))
-    return render_template('help.html')
+
+    # ── load all the reports this user has claimed ──
+    claimed_items = Report.query.filter_by(claimed=True,
+                                           claimed_by=session['email'])\
+                                .order_by(Report.timestamp.desc())\
+                                .all()
+
+    return render_template('help.html',
+                           claimed_items=claimed_items)
+
 
 
 @app.route('/settings')
@@ -370,6 +413,87 @@ def add_comment(report_id):
 def forbidden(e):
     return render_template('403.html'), 403
 
+@app.route('/complaint/<int:report_id>')
+def new_complaint(report_id):
+    if 'email' not in session:
+        return redirect(url_for('do_login'))
+
+    # load the report (404 if bad ID)
+    report = Report.query.get_or_404(report_id)
+
+    form = ComplaintForm()
+    form.report_id.data = report.id
+    
+    return render_template('complaint_form.html',
+                       form=form,
+                       report=report)
+
+
+
+@app.route('/complaint', methods=['GET', 'POST'])
+def submit_complaint():
+    if 'email' not in session:
+        return redirect(url_for('do_login'))
+    form = ComplaintForm()
+    if form.validate_on_submit():
+        c = Complaint(
+          reporter_email=session['email'],
+          report_id=form.report_id.data,
+          message=form.details.data
+        )
+        db.session.add(c)
+        db.session.commit()
+        flash('Your complaint has been submitted.')
+        return redirect(url_for('help_page'))
+    report = Report.query.get_or_404(form.report_id.data)
+    return render_template('complaint_form.html', form=form, report=report)
+
+@app.route('/request-claim/<int:report_id>', methods=['POST'])
+def request_claim(report_id):
+    if 'email' not in session:
+        return jsonify(message='Not logged in'), 403
+
+    exists = ClaimRequest.query.filter_by(
+        user_email=session['email'],
+        report_id=report_id
+    ).first()
+    if exists:
+        return jsonify(message='You already asked for this.'), 200
+
+    cr = ClaimRequest(user_email=session['email'], report_id=report_id)
+    db.session.add(cr); db.session.commit()
+    return jsonify(message='Claim request sent!'), 200
+
+
+@app.route('/receive-report/<int:report_id>')
+def receive_report(report_id):
+    # find the item
+    rpt = Report.query.get_or_404(report_id)
+    # only let the person who claimed it mark it received
+    if rpt.claimed_by == session.get('email') and not rpt.received:
+        rpt.received = True
+        db.session.commit()
+    # go back to the same category page
+    return redirect(url_for('category_items', cat=rpt.category))
+
+
+
+@app.route('/requests')
+@admin_only
+def view_requests():
+    reqs = ClaimRequest.query.filter_by(status='pending')\
+              .order_by(ClaimRequest.report_id).all()
+    return render_template('requests.html', requests=reqs)
+
+@app.route('/requests/<int:req_id>/<decision>', methods=['POST'])
+@admin_only
+def decide_claim(req_id, decision):
+    cr = ClaimRequest.query.get_or_404(req_id)
+    cr.status = 'accepted' if decision=='accept' else 'declined'
+    db.session.commit()
+    flash(f'Request {decision}ed.')
+    return redirect(url_for('view_requests'))
+
 
 # ───── Create DB & Seed Admin ─────
 with app.app_context():
@@ -379,11 +503,22 @@ with app.app_context():
         alice_user = User(
             email='alice@somaiya.edu',
             password_hash=pw_hash,
-            roles=''  # leave blank or set 'admin' if you want this user to be an admin
+            roles='admin'  # leave blank or set 'admin' if you want this user to be an admin
         )
         db.session.add(alice_user)
+    
+# —————— Add Bob as a normal user ——————
+    if not User.query.filter_by(email='bob@somaiya.edu').first():
+        pw_hash = generate_password_hash('banana@123')
+        bob_user = User(
+        email='bob@somaiya.edu',
+        password_hash=pw_hash,
+        roles=''    # ← keep this blank so Bob is just a normal user
+    )
+        db.session.add(bob_user)
+    
     db.session.commit()
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
 
