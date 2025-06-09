@@ -2,33 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Found Items</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
-    body { font-family:sans-serif; background:#eef; margin:0; padding:20px; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
-    .card { background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1); overflow:hidden; cursor:pointer; }
-    .card img { width:100%; height:180px; object-fit:cover; }
-    .body { padding:12px; }
-    a.back { display:inline-block; margin:16px 0; text-decoration:none; color:#3498db;}
+    body{font-family:sans-serif;padding:20px;}
+    table{width:100%;border-collapse:collapse;}
+    th,td{padding:8px;border:1px solid #ccc;}
   </style>
 </head>
 <body>
-  <h1>Returned Items</h1>
-  <div class="grid">
-    {% for item in items %}
-      <div class="card">
-        <img src="{{ url_for('static','uploads/'+item.filename) }}" alt="{{ item.description }}">
-        <div class="body">
-          <p><strong>{{ item.description }}</strong></p>
-          <p>Location: {{ item.location }}</p>
-          <p>Date: {{ item.date_found }}</p>
-          <p>Claimed by: {{ item.claimed_by }}</p>
-        </div>
-      </div>
+  <h1>Successfully Claimed Items</h1>
+  <table>
+    <tr><th>Item #</th><th>Claimed By</th><th>Date</th></tr>
+    {% for c in accepted %}
+      <tr>
+        <td>{{ c.report_id }}</td>
+        <td>{{ c.user_email }}</td>
+        <td>{{ c.timestamp.strftime('%Y-%m-%d') }}</td>
+      </tr>
     {% endfor %}
-  </div>
-  <a class="back" href="{{ url_for('show_home') }}">&larr; Back to Dashboard</a>
+  </table>
+  <p><a href="{{ url_for('show_home') }}">&larr; Back</a></p>
 </body>
 </html>

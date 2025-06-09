@@ -4,25 +4,49 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Report Found Item</title>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
-    body { font-family:sans-serif; padding:40px; background:#eef; }
-    form { background:#fff; padding:24px; border-radius:8px; max-width:500px; margin:auto; }
-    label{display:block;margin-top:12px;}
-    input, select, textarea {width:100%;padding:8px;margin-top:4px;border:1px solid #ccc;border-radius:4px;}
-    button{margin-top:16px;padding:10px 20px;background:#28a745;border:none;color:#fff;border-radius:4px;}
+    body { font-family:Arial,sans-serif; background:#ecf0f1; margin:0; padding:20px;}
+    .form-container {
+      max-width:500px; margin:40px auto;
+      background:#fff; padding:24px; border-radius:8px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.1);
+    }
+    .form-container h2 { margin-top:0;}
+    .form-container form input,
+    .form-container form select,
+    .form-container form button {
+      width:100%; padding:10px; margin:8px 0;
+      box-sizing:border-box;
+    }
   </style>
 </head>
 <body>
-  <form method="post" enctype="multipart/form-data">
-    {{ form.hidden_tag() }}
+  <div class="form-container">
     <h2>Report Found Item</h2>
-    <label>{{ form.description.label }}{{ form.description() }}</label>
-    <label>{{ form.location.label }}{{ form.location() }}</label>
-    <label>{{ form.date_found.label }}{{ form.date_found(min=min_date, max=max_date) }}</label>
-    <label>{{ form.category.label }}{{ form.category() }}</label>
-    <label>{{ form.contact.label }}{{ form.contact() }}</label>
-    <label>{{ form.photo.label }}{{ form.photo() }}</label>
-    <button type="submit">Submit</button>
-  </form>
+    <form method="post" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {{ form.description.label }}<br>
+      {{ form.description(size=50) }}<br>
+
+      {{ form.location.label }}<br>
+      {{ form.location(size=30) }}<br>
+
+      {{ form.date_found.label }}<br>
+      {{ form.date_found(min=min_date, max=max_date) }}<br>
+
+      {{ form.category.label }}<br>
+      {{ form.category() }}<br>
+
+      {{ form.contact.label }}<br>
+      {{ form.contact(size=20) }}<br>
+
+      {{ form.photo.label }}<br>
+      {{ form.photo() }}<br>
+
+      <button type="submit">Submit Report</button>
+    </form>
+  </div>
 </body>
 </html>

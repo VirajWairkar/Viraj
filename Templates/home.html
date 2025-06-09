@@ -4,7 +4,10 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>KJSSE Lost & Found</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
   <style>
     :root {
       --primary-blue: #3498db;
@@ -12,37 +15,137 @@
       --dark-blue:    #2c3e50;
       --light-bg:     #ecf0f1;
       --text-light:   #fff;
+      --border:       #ccc;
+      --shadow:       rgba(0,0,0,0.1);
     }
+    * { box-sizing: border-box; }
     body {
-      margin: 0; font-family: sans-serif;
-      background: var(--light-bg); color: var(--dark-blue);
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--light-bg);
+      color: var(--dark-blue);
     }
+    /* HEADER */
     .header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 32px; background: var(--dark-blue); color: var(--text-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      background: var(--dark-blue);
+      color: var(--text-light);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
-    .title { font-size: 1.5rem; }
+    .title { font-size: 1.5rem; font-weight: 600; }
+    .actions, .user-dropdown { display: flex; align-items: center; gap: 12px; }
     .actions a {
-      margin-left: 12px;
-      padding: 10px 16px; border-radius: 6px; text-decoration: none; color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 500;
+      transition: background 0.2s;
     }
-    .report-btn   { background: var(--accent-red); }
-    .report-btn:hover { background: #c0392b; }
-    .found-items-btn { background: var(--primary-blue); }
-    .found-items-btn:hover { background: #2980b9; }
-    .claimed-btn  { background: #8e44ad; }
-    .claimed-btn:hover { background: #71368a; }
+    .actions a:hover { opacity: 0.9; }
+    .report-btn       { background: var(--accent-red); }
+    .found-items-btn  { background: var(--primary-blue); }
+    .claimed-btn      { background: #8e44ad; }
+    /* PROFILE DROPDOWN */
+    .user-dropdown {
+      position: relative;
+      cursor: pointer;
+    }
+    .user-avatar {
+      background: var(--accent-red);
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      color: #fff;
+    }
+    .user-name {
+      font-size: 1rem;
+      text-transform: capitalize;
+      color: #fff;
+      margin-left: 6px;
+      font-weight: 500;
+    }
+    .profile-card {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      background: #fff;
+      color: #333;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: 0 4px 12px var(--shadow);
+      overflow: hidden;
+      width: 220px;
+      z-index: 200;
+    }
+    .profile-header {
+      background: var(--accent-red);
+      color: #fff;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+    }
+    .profile-header .avatar {
+      background: #fff;
+      color: var(--accent-red);
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      margin-right: 12px;
+    }
+    .profile-header .info { line-height: 1.2; }
+    .profile-header .name  { font-weight: 600; }
+    .profile-header .email { font-size: 0.85rem; opacity: 0.85; }
+    .close-icon {
+      position: absolute;
+      top: 8px; right: 10px;
+      font-size: 1.2rem; color: #fff;
+      cursor: pointer;
+    }
+    .profile-options {
+      list-style: none;
+      margin: 0; padding: 0;
+    }
+    .profile-options li { border-bottom: 1px solid #eee; }
+    .profile-options li:last-child { border-bottom: none; }
+    .profile-options a {
+      display: flex; align-items: center;
+      padding: 12px 16px;
+      color: #333;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .profile-options a i {
+      width: 24px; text-align: center;
+      margin-right: 10px;
+      color: var(--accent-red);
+      font-size: 1.1rem;
+    }
+    .profile-options a:hover { background: #f9f9f9; }
+
+    /* MAIN */
     .main {
-      padding: 40px; text-align: center;
+      padding: 40px 20px;
+      text-align: center;
     }
     .found-count {
-      font-size: 3rem; font-weight: bold; margin: 20px 0;
+      font-size: 3rem; font-weight: bold;
+      margin-bottom: 8px;
     }
   </style>
 </head>
 <body>
+
   <header class="header">
-    <div class="title">KJSSE Lost & Found</div>
+    <div class="title">KJSSE Lost &amp; Found</div>
     <div class="actions">
       <a href="{{ url_for('report_found') }}" class="report-btn">
         <i class="fas fa-upload"></i> Report Found
@@ -55,9 +158,44 @@
           <i class="fas fa-check-circle"></i> Claimed
         </a>
       {% endif %}
-      <a href="{{ url_for('do_logout') }}" style="margin-left:24px; color:#fff;">
-        <i class="fas fa-sign-out-alt"></i> Logout
-      </a>
+    </div>
+
+    <div class="user-dropdown" onclick="toggleProfileCard(event)">
+      <div class="user-avatar"><i class="fas fa-user-circle"></i></div>
+      <div class="user-name">{{ email.split('@')[0] | capitalize }}</div>
+
+      <div id="profile-card" class="profile-card">
+        <div class="profile-header">
+          <div class="avatar"><i class="fas fa-user-circle"></i></div>
+          <div class="info">
+            <div class="name">{{ email.split('@')[0] | capitalize }}</div>
+            <div class="email">{{ email }}</div>
+          </div>
+          <div class="close-icon">&times;</div>
+        </div>
+        <ul class="profile-options">
+          <li>
+            <a href="{{ url_for('show_home') }}">
+              <i class="fas fa-user"></i> Profile
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('settings') }}">
+              <i class="fas fa-cog"></i> Settings
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('help_page') }}">
+              <i class="fas fa-question-circle"></i> Help
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('logout') }}">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
   </header>
 
@@ -67,15 +205,35 @@
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded',()=>{
+    // Counter animation
+    document.addEventListener('DOMContentLoaded', ()=>{
       const el = document.querySelector('.found-count');
-      const tgt = parseInt(el.getAttribute('data-target'),10)||0;
-      let cur=0,step=Math.ceil(tgt/50)||1;
+      const tgt = parseInt(el.dataset.target,10) || 0;
+      let cur = 0, step = Math.ceil(tgt/50) || 1;
       const iv = setInterval(()=>{
-        cur+=step;
-        if(cur>=tgt){ el.textContent = tgt; clearInterval(iv); }
-        else{ el.textContent = cur + '+'; }
-      },20);
+        cur += step;
+        if(cur >= tgt){
+          el.textContent = tgt;
+          clearInterval(iv);
+        } else {
+          el.textContent = cur + '+';
+        }
+      }, 20);
+    });
+
+    // Profile dropdown toggle
+    function toggleProfileCard(evt) {
+      evt.stopPropagation();
+      const card = document.getElementById('profile-card');
+      card.style.display = (card.style.display === 'flex') ? 'none' : 'flex';
+    }
+    // Close if clicked outside
+    window.addEventListener('click', (e)=>{
+      const card = document.getElementById('profile-card');
+      const dropdown = document.querySelector('.user-dropdown');
+      if (!dropdown.contains(e.target)) {
+        card.style.display = 'none';
+      }
     });
   </script>
 </body>

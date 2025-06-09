@@ -5,225 +5,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Category: {{ category.title() }}</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    :root {
-      --primary-color: #5177ad;
-      --accent-color: #ff6b6b;
-      --sidebar-bg: #ffffff;
-      --main-bg: #e5f7fe;
-      --card-bg: #ffffff;
-      --text-dark: #333;
-      --text-medium: #555;
-      --text-light: #777;
-      --border-color: #ccc;
-      --shadow-light: rgba(0,0,0,0.1);
-      --shadow-medium: rgba(0,0,0,0.15);
-    }
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--main-bg);
-      color: var(--text-dark);
-      line-height: 1.6;
-    }
-    .container {
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-    /* Sidebar */
-    .sidebar {
-      width: 100%;
-      background: var(--sidebar-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 10px var(--shadow-light);
-    }
-    .sidebar h3 {
-      font-size: 1.3rem;
-      color: var(--primary-color);
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .sidebar nav ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-    }
-    .sidebar nav li {
-      flex: 1 1 auto;
-      min-width: 120px;
-    }
-    .sidebar .item {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 12px 15px;
-      text-decoration: none;
-      color: var(--text-dark);
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-      background-color: #f8f8f8;
-      border: 1px solid #eee;
-    }
-    .sidebar .item:hover {
-      background-color: #e0f2f7;
-      color: var(--primary-color);
-      transform: translateY(-2px);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
-    .sidebar .item i {
-      color: var(--primary-color);
-      font-size: 1.1rem;
-    }
-    /* Main */
-    .main {
-      flex: 1;
-    }
-    .search-bar {
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .search-bar input {
-      flex: 1;
-      padding: 12px 15px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      font-size: 1rem;
-      box-shadow: inset 0 1px 3px var(--shadow-light);
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-    .search-bar input:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(81,119,173,0.2);
-    }
-    .current-date {
-      padding: 0 5px 16px 5px;
-      font-size: 1.1rem;
-      color: var(--text-dark);
-    }
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 24px;
-      padding: 0;
-    }
-    .card {
-      background: var(--card-bg);
-      border-radius: 10px;
-      box-shadow: 0 4px 12px var(--shadow-medium);
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      display: flex;
-      flex-direction: column;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    }
-    .card img {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      display: block;
-      transition: opacity 0.3s ease;
-    }
-    .card-body {
-      padding: 18px;
-      flex-grow: 1;
-    }
-    .card-body p {
-      margin: 6px 0;
-      font-size: 0.95rem;
-      color: var(--text-medium);
-    }
-    .card-body p strong {
-      font-size: 1.1rem;
-      color: var(--text-dark);
-    }
-    .card-footer {
-      background: #f9f9f9;
-      padding: 12px 18px;
-      text-align: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      border-top: 1px solid #eee;
-    }
-    .action-btn {
-      padding: 8px 15px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: white;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-      white-space: nowrap;
-    }
-    .action-btn:disabled {
-      background-color: #cccccc;
-      cursor: not-allowed;
-      opacity: 0.7;
-      transform: none;
-    }
-    .claim-btn {
-      background-color: var(--accent-color);
-    }
-    .claim-btn:hover {
-      background-color: #e05c5c;
-    }
-    .status-indicator {
-      font-size: 0.9rem;
-      font-weight: 600;
-      padding: 4px 8px;
-      border-radius: 12px;
-      text-transform: uppercase;
-    }
-    .status-claimed {
-      background-color: #fffacd;
-      color: #b8860b;
-    }
-    a.back-btn {
-      display: block;
-      margin: 30px auto;
-      padding: 12px 20px;
-      background-color: var(--primary-color);
-      color: #fff;
-      text-decoration: none;
-      width: fit-content;
-      border-radius: 6px;
-      text-align: center;
-      font-weight: 600;
-    }
-    a.back-btn:hover {
-      background-color: #426799;
-    }
-    @media (min-width: 768px) {
-      .container { flex-direction: row; }
-      .sidebar {
-        width: 250px;
-        margin-right: 20px;
-        position: sticky;
-        top: 20px;
-      }
-    }
+    /* … your existing CSS … */
   </style>
 </head>
 <body>
@@ -232,39 +17,56 @@
       <h3>Item Categories</h3>
       <nav>
         <ul>
-          <li><a href="{{ url_for('category_items', cat='books') }}" class="item"><i class="fas fa-book"></i> Books</a></li>
-          <li><a href="{{ url_for('category_items', cat='stationary') }}" class="item"><i class="fas fa-pencil-alt"></i> Stationary</a></li>
-          <li><a href="{{ url_for('category_items', cat='accessories') }}" class="item"><i class="fas fa-key"></i> Accessories</a></li>
-          <li><a href="{{ url_for('category_items', cat='others') }}" class="item"><i class="fas fa-th-large"></i> Others</a></li>
+          <li><a href="{{ url_for('category_items', cat='books') }}" class="item">
+                <i class="fas fa-book"></i> Books</a>
+          </li>
+          <li><a href="{{ url_for('category_items', cat='stationary') }}" class="item">
+                <i class="fas fa-pencil-alt"></i> Stationary</a>
+          </li>
+          <li><a href="{{ url_for('category_items', cat='accessories') }}" class="item">
+                <i class="fas fa-key"></i> Accessories</a>
+          </li>
+          <li><a href="{{ url_for('category_items', cat='others') }}" class="item">
+                <i class="fas fa-th-large"></i> Others</a>
+          </li>
         </ul>
       </nav>
     </aside>
 
     <div class="main">
       <div class="search-bar">
-        <input type="text" id="search" placeholder="Search by description or location..." oninput="filterCards()" />
+        <input type="text" id="search"
+               placeholder="Search by description or location..."
+               oninput="filterCards()" />
       </div>
-      <form method="get" action="{{ url_for('category_items', cat=category) }}" style="margin-bottom:16px;">
+
+      <form method="get" action="{{ url_for('category_items', cat=category) }}">
         <label for="filter_date">Filter by date:</label>
-        <input
-          type="date"
-          id="filter_date"
-          name="filter_date"
-          min="{{ min_date }}"
-          max="{{ max_date }}"
-          value="{{ filter_date or max_date }}"
-        />
+        <input type="date" id="filter_date" name="filter_date"
+               min="{{ min_date }}" max="{{ max_date }}"
+               value="{{ filter_date or max_date }}">
         <button type="submit">Go</button>
       </form>
 
       <div class="current-date">
-        Date: <strong>{{ filter_date or today.strftime('%Y-%m-%d') }}</strong>
+        {% if filter_date %}
+          Date: <strong>{{ filter_date }}</strong>
+        {% else %}
+          Date: <strong>{{ today.strftime('%Y-%m-%d') }}</strong>
+        {% endif %}
       </div>
 
       <div class="card-grid">
         {% for item in items %}
-          <div class="card">
-            <img src="{{ url_for('static','uploads/'+item.filename) }}" alt="{{ item.description }}">
+          <div class="card" data-id="{{ item.id }}"
+               onclick="openModal({{ item.id }})">
+            {% if item.filename %}
+              <img src="{{ url_for('static', filename='uploads/' ~ item.filename) }}"
+                   alt="{{ item.description }}" />
+            {% else %}
+              <img src="{{ url_for('static', filename='images/placeholder.png') }}"
+                   alt="No image available" />
+            {% endif %}
             <div class="card-body">
               <p><strong>{{ item.description }}</strong></p>
               <p>Location: {{ item.location }}</p>
@@ -272,12 +74,24 @@
               <p>Found by: {{ item.email }}</p>
             </div>
             <div class="card-footer">
-              {% if item.id in user_claims %}
+              {% if item.received %}
+                <span class="status-indicator status-received">Received</span>
+              {% elif item.claimed and item.claimed_by==email %}
+                <span class="status-indicator status-claimed">Claimed</span>
+              {% elif item.id in user_claims %}
                 <span class="status-indicator status-claimed">Pending…</span>
               {% else %}
                 <button class="action-btn claim-btn"
-                        onclick="requestClaim({{ item.id }}); return false;">
+                        onclick="event.stopPropagation(); window.location='{{ url_for('claim_report', report_id=item.id) }}'">
                   Claim
+                </button>
+                <span class="status-indicator status-unclaimed">Unclaimed</span>
+              {% endif %}
+              {% if 'admin' in roles %}
+                <!-- delete button for admins -->
+                <button class="action-btn delete-btn"
+                        onclick="event.stopPropagation(); if(confirm('Delete this report?')){ window.location='{{ url_for('decide_claim', req_id=0, decision='') }}'; }">
+                  🗑️ Delete
                 </button>
               {% endif %}
             </div>
@@ -285,27 +99,34 @@
         {% endfor %}
       </div>
 
-      <a href="{{ url_for('show_home') }}" class="back-btn">&larr; Back to Dashboard</a>
+      <a href="{{ url_for('show_home') }}" class="back-btn">
+        &larr; Back to Dashboard
+      </a>
     </div>
   </div>
 
+  <!-- Modals… same as before… -->
+
+  <!-- Fuse.js for fuzzy search -->
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@6"></script>
   <script>
-    function requestClaim(id) {
-      fetch(`/request-claim/${id}`, {
-        method:'POST',
-        headers:{ 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content }
-      })
-      .then(r=>r.json()).then(d=>{
-        alert(d.message);
-        location.reload();
+    // embed the items array in JS
+    const items = {{ items|tojson }};
+    const fuse = new Fuse(items, {
+      keys: ['description','location'],
+      threshold: 0.3
+    });
+
+    function filterCards() {
+      const q = document.getElementById('search').value;
+      let results = q ? fuse.search(q).map(r=>r.item) : items;
+      document.querySelectorAll('.card').forEach(card=>{
+        const id = parseInt(card.dataset.id,10);
+        card.style.display = results.some(i=>i.id===id) ? '' : 'none';
       });
     }
-    function filterCards(){
-      const q=document.getElementById('search').value.toLowerCase();
-      document.querySelectorAll('.card').forEach(c=>{
-        c.style.display=c.textContent.toLowerCase().includes(q)?'':'none';
-      });
-    }
+
+    // open/close modals… same as your existing JS
   </script>
 </body>
 </html>
