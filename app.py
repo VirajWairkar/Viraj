@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from datetime import date
+from datetime import date,timedelta
 from functools import wraps
 
 from flask import (
@@ -192,8 +192,8 @@ def category_items(cat):
     ]
 
     all_dates = [r.date_found for r in Report.query.with_entities(Report.date_found)]
-    min_date = min(all_dates) if all_dates else date.today().isoformat()
-    max_date = max(all_dates) if all_dates else date.today().isoformat()
+    max_date = date.today().isoformat()
+    min_date = (date.today() - timedelta(days=6)).isoformat()
 
     user_claims = {
         cr.report_id for cr in ClaimRequest.query.filter_by(user_email=session['email'])
@@ -218,6 +218,7 @@ def claim_report(report_id):
         user_email=session['email'],
         report_id=report_id
     ).first()
+    
     if not exists:
         cr = ClaimRequest(user_email=session['email'], report_id=report_id)
         db.session.add(cr)
@@ -297,3 +298,4 @@ with app.app_context():
 
 if __name__ == '__main__':
     app.run(debug=True)
+

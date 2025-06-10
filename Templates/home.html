@@ -1,96 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="UTF-8">
   <title>KJSSE Lost & Found</title>
   <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    :root {
-      --primary-blue: #3498db;
-      --accent-red:   #e74c3c;
-      --dark-blue:    #2c3e50;
-      --light-bg:     #ecf0f1;
-      --text-light:   #fff;
-    }
     body {
-      margin: 0; font-family: sans-serif;
-      background: var(--light-bg); color: var(--dark-blue);
+      font-family: sans-serif;
+      margin: 0;
+      background: #ecf0f1;
+      color: #2c3e50;
     }
-    .header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 32px; background: var(--dark-blue); color: var(--text-light);
+    header {
+      background: #2c3e50;
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    .title { font-size: 1.5rem; }
-    .actions a {
-      margin-left: 12px;
-      padding: 10px 16px; border-radius: 6px;
-      text-decoration: none; color: #fff;
-      font-weight: 600;
+    nav a {
+      margin-right: 12px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
     }
-    .report-btn      { background: var(--accent-red); }
-    .found-items-btn { background: var(--primary-blue); }
-    .claims-btn      { background: #8e44ad; }
-    .settings-btn    { background: #27ae60; }
-    .logout-btn      { background: transparent; color: #fff; }
-    .actions a:hover  { opacity: 0.9; }
-
+    .categories {
+      background: white;
+      padding: 12px 24px;
+      text-align: center;
+      font-size: 1.1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .categories a {
+      margin: 0 12px;
+      text-decoration: none;
+      color: #2c3e50;
+      font-weight: 500;
+    }
+    .categories a:hover {
+      text-decoration: underline;
+    }
     .main {
-      padding: 40px; text-align: center;
+      padding: 40px;
+      text-align: center;
     }
-    .found-count {
-      font-size: 3rem; font-weight: bold; margin: 20px 0;
+    .announcements {
+      background: white;
+      padding: 20px;
+      margin: 0 auto 20px;
+      max-width: 600px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .count {
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 8px;
     }
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="title">KJSSE Lost & Found</div>
-    <div class="actions">
-      <a href="{{ url_for('report_found') }}"      class="report-btn">
-        <i class="fas fa-upload"></i> Report Found
-      </a>
-      <a href="{{ url_for('items_found') }}"       class="found-items-btn">
-        <i class="fas fa-box-open"></i> Found Items
-      </a>
-      <a href="{{ url_for('my_claims') }}"         class="claims-btn">
-        <i class="fas fa-clipboard-list"></i> My Claims
-      </a>
-      {% if 'admin' in roles %}
-        <a href="{{ url_for('view_requests') }}"   class="claims-btn">
-          <i class="fas fa-check-circle"></i> Pending Requests
-        </a>
-      {% endif %}
-      <a href="{{ url_for('settings') }}"          class="settings-btn">
-        <i class="fas fa-cog"></i> Settings
-      </a>
-      <a href="{{ url_for('logout') }}"            class="logout-btn">
-        <i class="fas fa-sign-out-alt"></i> Logout
-      </a>
-    </div>
-  </header>
 
-  <div class="main">
-    <div class="found-count" data-target="{{ found_count }}">0+</div>
-    <div>Items Successfully Returned</div>
+<header>
+  <div><strong>KJSSE Lost & Found</strong></div>
+  <nav>
+    <a href="{{ url_for('report_found') }}">📤 Report Found</a>
+    <a href="{{ url_for('items_found') }}">📦 Found Items</a>
+    <a href="{{ url_for('my_claims') }}">📋 My Claims</a>
+    <a href="{{ url_for('settings') }}">⚙️ Settings</a>
+    {% if 'admin' in roles %}
+      <a href="{{ url_for('view_requests') }}">🕒 Pending Requests</a>
+    {% endif %}
+    <a href="{{ url_for('logout') }}">🔄 Logout</a>
+  </nav>
+</header>
+
+<div class="categories">
+  <a href="{{ url_for('category_items', cat='books') }}">Books</a>
+  <a href="{{ url_for('category_items', cat='stationary') }}">Stationary</a>
+  <a href="{{ url_for('category_items', cat='accessories') }}">Accessories</a>
+  <a href="{{ url_for('category_items', cat='others') }}">Others</a>
+</div>
+
+<div class="main">
+  <div class="announcements">
+    <h2>Announcements</h2>
+    <p>No announcements yet.</p>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const el   = document.querySelector('.found-count');
-      const tgt  = parseInt(el.getAttribute('data-target'), 10) || 0;
-      let   cur  = 0, step = Math.ceil(tgt/50) || 1;
-      const iv = setInterval(() => {
-        cur += step;
-        if (cur >= tgt) {
-          el.textContent = tgt;
-          clearInterval(iv);
-        } else {
-          el.textContent = cur + '+';
-        }
-      }, 20);
-    });
-  </script>
+  <div>
+    <div class="count">{{ found_count }}</div>
+    <div>Items Successfully Returned</div>
+  </div>
+</div>
+
 </body>
 </html>
