@@ -84,7 +84,7 @@ class ReportForm(FlaskForm):
     ])
     contact = TelField('Contact', validators=[
         DataRequired(), Length(max=20),
-        Regexp(r'^[0-9\+\-\s]+$', message="Only digits, +, -, spaces allowed.")
+        Regexp(r'^\d{10}$', message="Only digits, +, -, spaces allowed.")
     ])
     photo = FileField('Photo', validators=[DataRequired()])
 
@@ -292,6 +292,18 @@ with app.app_context():
         db.session.add(User(
             email='bob@somaiya.edu',
             password_hash=generate_password_hash('banana@123'),
+            roles=''
+        ))
+    if not User.query.filter_by(email='charles@somaiya.edu').first():
+        db.session.add(User(
+            email='charles@somaiya.edu',
+            password_hash=generate_password_hash('cherry@123'),
+            roles=''
+        ))
+    if not User.query.filter_by(email='daisy@somaiya.edu').first():
+        db.session.add(User(
+            email='daisy@somaiya.edu',
+            password_hash=generate_password_hash('desert@123'),
             roles=''
         ))
     db.session.commit()
