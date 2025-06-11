@@ -41,7 +41,10 @@
 
       {{ form.contact.label }}<br>
       {{ form.contact(size=20) }}<br>
-
+      {% for error in form.contact.errors %}
+        <small style="color:red">Contact must be exactly 10 digits.</small>
+        <br>
+      {% endfor %}
       {{ form.photo.label }}<br>
       {{ form.photo() }}<br>
 
