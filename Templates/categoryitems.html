@@ -120,6 +120,12 @@
       font-weight: 500;
     }
     .back-btn:hover { text-decoration: underline; }
+    .disabled-claim {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: auto; /* allow tooltip */
+    }
+
   </style>
 </head>
 <body>
@@ -174,7 +180,7 @@
               <img src="{{ url_for('static', filename='images/placeholder.png') }}" alt="No image available" />
             {% endif %}
             <div class="card-body">
-              <p><strong>Description:</strong> {{ item.description }}</p>
+              <p><strong>Description:</strong><span class="blur-text">{{ item.description }}</span></p>
               <p><strong>Location:</strong><span class="blur-text">{{ item.location }}</span></p>
               <p><strong>Date:</strong> {{ item.date_found }}</p>
               <p><strong>Contact:</strong> {{ item.contact }}</p>
@@ -186,13 +192,24 @@
                 {% else %}
                   {% if item.id in user_claims %}
                     <span class="status-indicator status-claimed">Pending…</span>
+
+                  {% elif item.email == email %}
+                    <!-- User's own item → disabled claim button -->
+                    <button class="action-btn claim-btn disabled-claim" disabled
+                            title="You cannot claim your own item">
+                      Claim
+                    </button>
+                    <span class="status-indicator status-unclaimed">Unclaimed</span>
+
                   {% else %}
+                    <!-- Normal claim option -->
                     <button class="action-btn claim-btn"
                             onclick="event.stopPropagation(); openClaimModal({{ item.id }});">
                       Claim
                     </button>
                     <span class="status-indicator status-unclaimed">Unclaimed</span>
                   {% endif %}
+                  
                 {% endif %}
               {% endif %}
 

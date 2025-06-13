@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from datetime import date,timedelta
+from datetime import date, timedelta, datetime
 from functools import wraps
 
 from flask import (
@@ -185,6 +185,19 @@ def settings():
 @app.route('/report-found', methods=['GET','POST'])
 @login_required
 def report_found():
+    # ⏳ 1 hour 15 minute cooldown
+    cooldown_threshold = datetime.now() - timedelta(minutes=75)
+    recent_report = Report.query.filter(
+        Report.email == session['email'],
+        Report.timestamp >= cooldown_threshold
+    ).order_by(Report.timestamp.desc()).first()
+
+    if recent_report:
+        minutes_since = (datetime.now() - recent_report.timestamp).seconds // 60
+        wait_minutes = 75 - minutes_since
+        flash(f'❌ Cooldown Active: You can submit another report after {wait_minutes} more minutes.', 'danger')
+        return redirect(url_for('show_home'))
+
     form = ReportForm()
     if form.validate_on_submit():
         f = form.photo.data
@@ -200,13 +213,16 @@ def report_found():
             date_found  = form.date_found.data.strftime('%Y-%m-%d'),
             category    = form.category.data,
             contact     = form.contact.data,
-            received    = False
+            received    = False,
+            timestamp   = datetime.now()
         )
         db.session.add(rpt)
         db.session.commit()
         flash('Report submitted!', 'success')
         return redirect(url_for('category_items', cat=form.category.data))
+
     return render_template('report_found.html', form=form)
+
 
 @app.route('/found-items')
 @login_required
@@ -251,22 +267,37 @@ def category_items(cat):
         user_claims=user_claims
     )
 
-# AJAX‐style Claim → JSON
 @app.route('/claim/<int:report_id>', methods=['POST'])
 @login_required
 def claim_report(report_id):
+    # Get the item being claimed
+    report = Report.query.get_or_404(report_id)
+
+    # ❌ Prevent claiming your own item
+    if report.email == session['email']:
+        return jsonify(message='You cannot claim your own item.')
+
+    # ✅ Allow claim if not already requested
     exists = ClaimRequest.query.filter_by(
         user_email=session['email'],
         report_id=report_id
     ).first()
     
     if not exists:
-        cr = ClaimRequest(user_email=session['email'], report_id=report_id)
+        cr = ClaimRequest(
+            user_email=session['email'],
+            report_id=report_id,
+            description=request.form.get('description'),
+            location1=request.form.get('location1'),
+            location2=request.form.get('location2'),
+            location3=request.form.get('location3')
+        )
         db.session.add(cr)
         db.session.commit()
         return jsonify(message='Your claim request has been sent!')
     else:
         return jsonify(message='Already requested.')
+
 
 # AJAX‐style Delete → 204 No Content
 @app.route('/delete-report/<int:report_id>', methods=['POST'])
@@ -317,6 +348,15 @@ def view_requests():
         grouped[key].sort(key=lambda r: r.match_percentage, reverse=True)
 
     return render_template('requests.html', grouped_requests=grouped)
+
+@app.route('/debug-claims')
+def debug_claims():
+    from flask import Response
+    claims = ClaimRequest.query.all()
+    output = ""
+    for cr in claims:
+        output += f"<p>{cr.user_email} – Desc: {cr.description} – L1: {cr.location1}, L2: {cr.location2}, L3: {cr.location3}</p>"
+    return Response(output, mimetype='text/html')
 
 @app.route('/requests/<int:req_id>/<decision>', methods=['POST'])
 @admin_only
